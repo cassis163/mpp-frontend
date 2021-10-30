@@ -1,18 +1,31 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
-  </div>
+  <MovieCreateForm :onMovieCreated="this.onMovieCreated" />
+  <MovieCatalog :movies="this.movies" />
 </template>
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
+import MovieCatalog from "@/components/MovieCatalog.vue";
+import MovieCreateForm from "@/components/MovieCreateForm.vue";
+import Movie from "@/types/Movie";
 
 @Options({
   components: {
-    HelloWorld,
+    MovieCreateForm,
+    MovieCatalog,
   },
 })
-export default class Home extends Vue {}
+export default class Home extends Vue {
+  private movies: Movie[] = [];
+
+  created(): void {
+    fetch("http://localhost:8090/movies")
+      .then((res) => res.json())
+      .then((data: Movie[]) => (this.movies = data));
+  }
+
+  onMovieCreated(movie: Movie): void {
+    this.movies.push(movie);
+  }
+}
 </script>
